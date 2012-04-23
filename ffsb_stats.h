@@ -59,6 +59,9 @@ int ffsb_stats_str2syscall(char *, syscall_t *);
 /* Keep it in sync with syscall_t */
 #define FFSB_NUM_SYSCALLS (8UL)
 
+/* Increment for values array */
+#define FFSB_VALUES_INIT_ARRAY_SIZE (100000UL)
+
 /* What stats to collect, shared among all threads  */
 typedef struct ffsb_stats_config {
 	unsigned num_buckets;
@@ -83,6 +86,9 @@ typedef struct ffsb_stats_data {
 	uint64_t mins[FFSB_NUM_SYSCALLS];
 	uint64_t maxs[FFSB_NUM_SYSCALLS];
 	uint32_t *buckets[FFSB_NUM_SYSCALLS]; /* bucket counters */
+	uint32_t *values[FFSB_NUM_SYSCALLS];
+	uint64_t num_values[FFSB_NUM_SYSCALLS];
+	uint64_t max_values[FFSB_NUM_SYSCALLS];
 } ffsb_statsd_t ;
 
 /* constructor/destructor */

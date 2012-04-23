@@ -93,7 +93,13 @@ void ffsb_statsd_init(ffsb_statsd_t *fsd, ffsb_statsc_t *fsc)
 
 		memset(fsd->buckets[i], 0, sizeof(uint32_t) *
 		       fsc->num_buckets);
+
+		// init mem for saving values
+		fsd->values[i] = (uint32_t *)calloc(FFSB_VALUES_INIT_ARRAY_SIZE, sizeof(uint32_t));
+		fsd->num_values[i] = 0;
+		fsd->max_values[i] = FFSB_VALUES_INIT_ARRAY_SIZE;
 	}
+
 	fsd->config = fsc;
 }
 
@@ -101,7 +107,10 @@ void ffsb_statsd_destroy(ffsb_statsd_t *fsd)
 {
 	int i ;
 	for (i = 0 ; i < FFSB_NUM_SYSCALLS; i++)
+	{
 		free(fsd->buckets[i]);
+		free(fsd->values[i]);
+	}
 }
 
 void ffsb_add_data(ffsb_statsd_t *fsd, syscall_t s, uint32_t value)
@@ -119,6 +128,15 @@ void ffsb_add_data(ffsb_statsd_t *fsd, syscall_t s, uint32_t value)
 
 	fsd->counts[s]++;
 	fsd->totals[s] += value;
+
+	// If allocated mem does not fit reallocate new one with bigger size
+	if (fsd->num_values[s] >= fsd->max_values[s])
+	{
+		fsd->max_values[s] += fsd->max_values[s];
+		fsd->values[s] = (uint32_t *)realloc(fsd->values[s], fsd->max_values[s]*sizeof(uint32_t));
+	}
+	// Store values to fsd
+	fsd->values[s][fsd->num_values[s]++] = value;
 
 	if (fsd->config->num_buckets == 0)
 		return;
@@ -162,6 +180,20 @@ void ffsb_statsd_add(ffsb_statsd_t *dest, ffsb_statsd_t *src)
 
 		for (j = 0; j < num_buckets; j++)
 			dest->buckets[i][j] += src->buckets[i][j];
+
+		// If allocated mem does not fit reallocate new one with bigger size
+		if (dest->num_values[i] + src->num_values[i] >= dest->max_values[i])
+		{
+			dest->max_values[i] = dest->num_values[i] + src->num_values[i];
+			dest->values[i] = (uint32_t *)realloc(dest->values[i], (dest->max_values[i])*sizeof(uint32_t));
+		}
+
+		uint64_t k;
+		// merge values from each fsd
+		for (k = 0; k < src->num_values[i]; ++k)
+		{
+			dest->values[i][dest->num_values[i]++] = src->values[i][k];
+		}
 	}
 }
 
@@ -184,10 +216,11 @@ static void print_buckets_helper(ffsb_statsc_t *fsc, uint32_t *buckets)
 void ffsb_statsd_print(ffsb_statsd_t *fsd)
 {
 	int i;
+	uint64_t overall_calls = 0;
 	printf("\nSystem Call Latency statistics in millisecs\n" "=====\n");
 	printf("\t\tMin\t\tAvg\t\tMax\t\tTotal Calls\n");
 	printf("\t\t========\t========\t========\t============\n");
-	for (i = 0; i < FFSB_NUM_SYSCALLS; i++)
+	for (i = 0; i < FFSB_NUM_SYSCALLS; i++){
 		if (fsd->counts[i]) {
 			printf("[%7s]\t%05f\t%05lf\t%05f\t%12u\n",
 			       syscall_names[i], (float)fsd->mins[i] / 1000.0f,
@@ -196,6 +229,20 @@ void ffsb_statsd_print(ffsb_statsd_t *fsd)
 			       (float)fsd->maxs[i] / 1000.0f, fsd->counts[i]);
 			print_buckets_helper(fsd->config, fsd->buckets[i]);
 		}
+		overall_calls += fsd->num_values[i];
+	}
+	printf("\nDiscrete overall System Call Latency statistics in millisecs\n" "=====\n");
+	printf("\nOverall Calls: %lu\n=====\nValues[ms]:", (unsigned long)overall_calls);
+	uint64_t j;
+	//printf("\n%lu", fsd->num_values);
+	for (i = 0; i < FFSB_NUM_SYSCALLS; ++i)
+	{
+		printf("\n====\n[%7s]\tTotal calls: %12lu\n", syscall_names[i], (unsigned long)fsd->num_values[i]);
+		for (j = 0; j < fsd->num_values[i]; ++j)
+		{
+			printf("\n%05f", (float)fsd->values[i][j] / 1000.0f);
+		}
+	}
 }
 
 #if 0 /* Testing */
