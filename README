@@ -1,3 +1,10 @@
+About this Fork:
+
+This is a fork of the FFSB. The original source licenced under GPL2 is available
+under http://sourceforge.net/projects/ffsb/ . This fork includes some bugfixes
+and some new features. As the original project seems dead, a fork was necessary
+to publish the changes.
+
 Introduction:
 
 The Flexible Filesystem Benchmark (FFSB) is a filesystem performance
