@@ -330,7 +330,7 @@ void ffsb_bench_gettimeofday(void)
 	total_usec = difftime.tv_sec * 1000000;
 	total_usec += difftime.tv_usec;
 	average = total_usec / 1000ull;
-	printf("average time for gettimeofday(): %llu nsec\n", average);
+	printf("average time for gettimeofday(): %"PRIu64" nsec\n", average);
 }
 
 void ffsb_bench_getpid(void)
@@ -347,5 +347,5 @@ void ffsb_bench_getpid(void)
 	total_usec = difftime.tv_sec * 1000000;
 	total_usec += difftime.tv_usec;
 	average = total_usec / 1000ull;
-	printf("average time for getpid(): %llu nsec\n", average);
+	printf("average time for getpid(): %"PRIu64" nsec\n", average);
 }

@@ -177,7 +177,7 @@ void fhwrite(int fd, void *buf, uint32_t size, ffsb_thread_t *ft, ffsb_fs_t *fs)
 	}
 
 	if (realsize != size) {
-		printf("Wrote %d instead of %d bytes.\n"
+		printf("Wrote %zd instead of %d bytes.\n"
 			  "Probably out of disk space\n", realsize, size);
 		perror("write");
 		exit(1);
@@ -209,10 +209,10 @@ void fhseek(int fd, uint64_t offset, int whence, ffsb_thread_t *ft,
 
 	if (res == -1) {
 		if (whence == SEEK_SET)
-			fprintf(stderr, "tried to seek to %lld\n", offset);
+			fprintf(stderr, "tried to seek to %"PRIu64"\n", offset);
 		else
 			fprintf(stderr, "tried to seek from current "
-				"position to %lld\n", offset);
+				"position to %"PRIu64"\n", offset);
 
 		perror("seek");
 		exit(1);

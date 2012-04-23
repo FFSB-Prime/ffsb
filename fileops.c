@@ -135,14 +135,14 @@ void ffsb_readfile(ffsb_thread_t *ft, ffsb_fs_t *fs, unsigned opnum)
 					(read_blocksize + read_skipsize);
 
 			if (minfilesize > filesize) {
-				  printf("Error: read size %llu bytes too big "
+				  printf("Error: read size %"PRIu64" bytes too big "
 					 "w/ skipsize %u and blocksize %u,"
-					 " for file of size %llu bytes\n"
+					 " for file of size %"PRIu64" bytes\n"
 					 " aborting\n\n", read_size,
 					 read_skipsize, read_blocksize,
 					 filesize);
 				  printf("minimum file size must be at least "
-					 " %llu bytes\n", minfilesize);
+					 " %"PRIu64" bytes\n", minfilesize);
 					 exit(1);
 			}
 

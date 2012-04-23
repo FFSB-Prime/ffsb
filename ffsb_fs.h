@@ -178,7 +178,7 @@ uint32_t fs_get_numdirs(ffsb_fs_t *fs);
 double fs_get_desired_fsutil(ffsb_fs_t *fs);
 
 /* For these two, fs == NULL is OK */
-int fs_needs_stats(ffsb_fs_t *fs, syscall_t s);
+intptr_t fs_needs_stats(ffsb_fs_t *fs, syscall_t s);
 void fs_add_stat(ffsb_fs_t *fs, syscall_t sys, uint32_t val);
 
 #endif /* _FFSB_FS_H_ */

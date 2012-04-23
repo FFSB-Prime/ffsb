@@ -214,7 +214,7 @@ static int verify_file(struct benchfiles *bf, char *fname, void *fs_ptr)
 	filesize = ffsb_get_filesize(fname);
 
 	if (filesize < minsize || filesize > maxsize) {
-		printf("size %llu bytes for file %s is invalid\n",
+		printf("size %"PRIu64" bytes for file %s is invalid\n",
 		       filesize, fname);
 		return 1;
 	}
@@ -592,7 +592,7 @@ void fs_print_config(ffsb_fs_t *fs)
 		int i;
 		printf("\t Fileset weight:\n");
 		for (i = 0; i < fs->num_weights; i++)
-			printf("\t\t %12llu (%6s) -> %u (%.2f\%)\n",
+			printf("\t\t %12"PRIu64" (%6s) -> %u (%.2f%%)\n",
 			       fs->size_weights[i].size,
 			       ffsb_printsize(buf, fs->size_weights[i].size, 256),
 			       fs->size_weights[i].weight,
@@ -600,9 +600,9 @@ void fs_print_config(ffsb_fs_t *fs)
 				(float)fs->sum_weights) * 100);
 	}
 	else {
-		printf("\t min file size    = %llu\t(%s)\n", fs->minfilesize,
+		printf("\t min file size    = %"PRIu64"\t(%s)\n", fs->minfilesize,
 		       ffsb_printsize(buf, fs->minfilesize, 256));
-		printf("\t max file size    = %llu\t(%s)\n", fs->maxfilesize,
+		printf("\t max file size    = %"PRIu64"\t(%s)\n", fs->maxfilesize,
 		       ffsb_printsize(buf, fs->maxfilesize, 256));
 	}
 	printf("\t directio         = %s\n", (fs->flags & FFSB_FS_DIRECTIO) ?
@@ -613,18 +613,18 @@ void fs_print_config(ffsb_fs_t *fs)
 	       "on" : "off");
 	printf("\t\n");
 	printf("\t aging is %s\n", (fs->age_fs) ? "on" : "off");
-	printf("\t current utilization = %.2f\%\n", getfsutil(fs->basedir)*100);
+	printf("\t current utilization = %.2f%%\n", getfsutil(fs->basedir)*100);
 	if (fs->age_fs) {
-		printf("\t desired utilization = %.2lf%\n", fs->desired_fsutil * 100);
+		printf("\t desired utilization = %.2lf%%\n", fs->desired_fsutil * 100);
 		printf("\t \n");
 		tg_print_config_aging(fs->aging_tg, fs->basedir);
 	}
 	printf("\t\n");
 }
 
-int fs_needs_stats(ffsb_fs_t *fs, syscall_t sys)
+intptr_t fs_needs_stats(ffsb_fs_t *fs, syscall_t sys)
 {
-	return (fs != NULL) ? (int)fs->fsd.config : 0;
+	return (fs != NULL) ? (intptr_t)(fs->fsd.config) : 0;
 }
 
 void fs_add_stat(ffsb_fs_t *fs, syscall_t sys, uint32_t val)

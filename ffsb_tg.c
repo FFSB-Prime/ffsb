@@ -271,7 +271,7 @@ static void tg_print_config_helper(ffsb_tg_t *tg)
 	printf("\t num_threads      = %d\n", tg->num_threads);
 	printf("\t\n");
 	printf("\t read_random      = %s\n", (tg->read_random) ? "on" : "off");
-	printf("\t read_size        = %llu\t(%s)\n", tg->read_size,
+	printf("\t read_size        = %"PRIu64"\t(%s)\n", tg->read_size,
 	       ffsb_printsize(buf, tg->read_size, 256));
 	printf("\t read_blocksize   = %u\t(%s)\n", tg->read_blocksize,
 	       ffsb_printsize(buf, tg->read_blocksize, 256));
@@ -280,7 +280,7 @@ static void tg_print_config_helper(ffsb_tg_t *tg)
 	       ffsb_printsize(buf, tg->read_skipsize, 256));
 	printf("\t\n");
 	printf("\t write_random     = %s\n", (tg->write_random) ? "on" : "off");
-	printf("\t write_size       = %llu\t(%s)\n", tg->write_size,
+	printf("\t write_size       = %"PRIu64"\t(%s)\n", tg->write_size,
 	       ffsb_printsize(buf, tg->write_size, 256));
 	printf("\t fsync_file       = %d\n", tg->fsync_file);
 	printf("\t write_blocksize  = %u\t(%s)\n", tg->write_blocksize,
