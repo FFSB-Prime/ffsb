@@ -220,7 +220,7 @@ void ffsb_readall(ffsb_thread_t *ft, ffsb_fs_t *fs, unsigned opnum)
 /* Shared core between ffsb_writefile and ffsb_writefile_fsync.*/
 
 static unsigned ffsb_writefile_core(ffsb_thread_t *ft, ffsb_fs_t *fs,
-				    unsigned opnum, uint64_t *filesize_ret,
+				    unsigned opnum, uint32_t *writesize_ret,
 				    int fsync_file)
 {
 	struct benchfiles *bf = (struct benchfiles *)fs_get_opdata(fs, opnum);
@@ -277,28 +277,28 @@ static unsigned ffsb_writefile_core(ffsb_thread_t *ft, ffsb_fs_t *fs,
 	}
 	unlock_file_reader(curfile);
 	fhclose(fd, ft, fs);
-	*filesize_ret = filesize;
+	*writesize_ret = write_size;
 	return iterations;
 }
 
 void ffsb_writefile(ffsb_thread_t *ft, ffsb_fs_t *fs, unsigned opnum)
 {
 	unsigned iterations;
-	uint64_t filesize;
+	uint32_t writesize;
 
-	iterations = ffsb_writefile_core(ft, fs, opnum, &filesize, 0);
-	ft_incr_op(ft, opnum, iterations, filesize);
-	ft_add_writebytes(ft, filesize);
+	iterations = ffsb_writefile_core(ft, fs, opnum, &writesize, 0);
+	ft_incr_op(ft, opnum, iterations, writesize);
+	ft_add_writebytes(ft, writesize);
 }	
 
 void ffsb_writefile_fsync(ffsb_thread_t *ft, ffsb_fs_t *fs, unsigned opnum)
 {
 	unsigned iterations;
-	uint64_t filesize;
+	uint32_t writesize;
 
-	iterations = ffsb_writefile_core(ft, fs, opnum, &filesize, 1);
-	ft_incr_op(ft, opnum, iterations, filesize);
-	ft_add_writebytes(ft, filesize);
+	iterations = ffsb_writefile_core(ft, fs, opnum, &writesize, 1);
+	ft_incr_op(ft, opnum, iterations, writesize);
+	ft_add_writebytes(ft, writesize);
 }	
 
 
